@@ -165,19 +165,36 @@ bot.on('start', function() {
 
   // C27J7NZ5L
   // setUserScore
-  setUserScore('pks','C27J7NZ5L','user',3,function(data){
-    console.log(data);
-  });
+  // setUserScore('pks','C27J7NZ5L','user',3,function(data){
+  //   console.log(data);
+  // });
+    // console.log(bot.getUsers()._value.members);
+
 
 
 });
 var isGameStart = false;
 
 bot.on('message', function(data) {
-  // console.log(data);
 
   const STR_START  = '.시작'
+  const STR_RNK  = '.랭크'
+  const STR_QUIZ1 = '류신노 겐오 쿠라에!'
+  const STR_QUIZ2 = '이것도 너프해 보시지!'
+  const STR_QUIZ3 = '석양이 진다..'
+  const STR_QUIZ4 = '목표를 포착했다.'
+  const STR_QUIZ5 = '폭탄 고정 / 폭탄받아'
+  const STR_QUIZ6 = '하늘에서 정의가 빗발친다!'
+  const STR_QUIZ7 = '신사숙녀여러분,한번 달려보자고!'
+  const STR_QUIZ8 = '류오 와가 테키오 쿠라에!'
+  const STR_QUIZ9 = '오우~ 제대로 놀아보자!'
+  const STR_QUIZ10 = '영웅은 죽지않아요'
+  
+  // console.log(bot.getChannels());
 
+  // arrQuiz.forEach(function(ele){
+  //   console.log(ele);
+  // })
 
   var typeUser;
   if(data.username == undefined){
@@ -194,13 +211,30 @@ bot.on('message', function(data) {
   var params = {
       icon_emoji: ''
   };
+  
+  var timeLine;
+
+  if(isGameStart==false){
+    var arrQuiz = [STR_QUIZ1,STR_QUIZ2,STR_QUIZ3,STR_QUIZ4,STR_QUIZ5,STR_QUIZ6,STR_QUIZ7,STR_QUIZ8,STR_QUIZ9,STR_QUIZ10]
+    var selectedQuiz = arrQuiz[Math.floor(Math.random() * arrQuiz.length)];
+    
+    timeLine = selectedQuiz.length;
+    // console.log(timeLine);
+    client.set(currentChannel + "_Quiz", selectedQuiz);
+
+  }
 
   if(data.text == STR_START){
+    
+    timeoutLine = arrQuiz.length;
+    // console.log(timeoutLine);
+    
+    bot.postMessage(currentChannel, '게임을 시작합니다.'+' timeout : '+timeLine/2+'초 ', params);
     isGameStart = true;
-    // console.log('start  => '+new Date().getTime());
   
     var cnt = 3;
     var countDown = setInterval(function(){
+      // if(cnt==3)
       if(cnt==0){
         // console.log('0');
       }
@@ -208,31 +242,133 @@ bot.on('message', function(data) {
         // console.log('1');
         //바로 여기서 끊김.
         clearInterval(countDown)
+
           setTimeout(function(){
-            bot.postMessage(currentChannel,'이것도 너프해 보시지!', params);          
             var startTime = new Date().getTime();
             client.set(currentChannel + "_start", startTime);
-            bot.postMessage(currentChannel, '시작 =>'+(startTime) , params);
+            bot.postMessage(currentChannel,'*'+selectedQuiz+'* '+msToTime(startTime), params);          
+            // bot.postMessage(currentChannel, STR_GAME_TIMEOUT+msToTime(startTime), params);
 
-          },1000);        
+            setTimeout(function(){
+              // var startTime = ;
+              isGameStart = false
+              // console.log(timeLine*1000);
+              bot.postMessage(currentChannel, '-----TimeOut------'+msToTime(new Date().getTime()) , params);
+              // client.set(currentChannel+'_resultText_'+data.user, resultText);
+              client.get(currentChannel+'_resultText_'+data.user,function(err,value){
+                bot.postMessage(currentChannel, value , params);
+              })
+
+
+            },timeLine/2*1000);
+
+          },1000);   
+
       };        
         bot.postMessage(currentChannel,cnt--, params);
-    },1000);
+    },500);
  
   }else if(data.text == '.끝'){
-    console.log('end  => '+new Date().getTime());
+    
+
+  }else if( isGameStart == true && typeUser != 'hanjin' && typingType =='message'){
+    console.log('game enter end!');
+    console.log(data);
+
+
     client.get(currentChannel + "_start", function(err, value) {
       var startTime = value;
       var endTime = new Date().getTime();
       var diffTime = endTime - startTime;
-      bot.postMessage(currentChannel, '차이 =>'+msToTime(diffTime) , params);  
-    });
 
-  }else if(data.text = '\n' && isGameStart == true && typeUser != 'hanjin' && typingType =='message'){
-    console.log('game enter end!');
-    isGameStart = false;
+      
+      client.get(currentChannel + "_Quiz", function(err, value) {
+        var selectedQuiz = value;
+        var accuracy = similarStr(data.text,selectedQuiz);
+        var score = 0;
+
+        if(accuracy==100){
+          score += 700;
+        }else if(accuracy>=90 && accuracy<100){
+          score += 500;
+        }else if(accuracy>=80 && accuracy<90){
+          score += 300;
+        }else{
+          score += 100;
+        } 
+        //0.5초 아래면
+        if(diffTime<500){
+          score += 100
+        }else if(diffTime>=500 && diffTime<1000){
+          score += 70
+        }else if(diffTime>=1000 && diffTime<1500){
+          score += 50
+        }else if(diffTime>=1500 && diffTime<2000){
+          score += 30
+        }else if (diffTime>=2000 && diffTime<3000){
+          score += 20
+        }
+        else{
+          score += 10
+        }
+        // console.log(diffTime);
+        console.log(score);
+
+        var arr = bot.getUsers()._value.members;
+        var userName;
+        // ㅁㄲ
+        arr.every(function(entry,inex){
+          // console.log(entry.id);
+          // console.log(entry);
+          if(entry.id ==data.user){
+            userName = entry.name;
+            
+            var resultText = userName+' =>'+' 정확도 : '+similarStr(data.text,selectedQuiz)+'  ||   차이 : '+msToTime(diffTime)+'  ||   score : '+score ;
+            client.set(currentChannel+'_resultText_'+data.user, resultText);
+
+            setUserScore('pks',currentChannel,userName,score,function(data){
+              console.log(data);
+              // console.log(data[0]);
+              // console.log(data[1]);
+            });
+
+            // bot.postMessage(currentChannel,resultText , params);  
+
+
+            return false;
+          }else{
+            return true;
+          }
+          
+          
+        });
+        // arr.forEach(function(ele){
+        //   console.log(ele.id);
+        // })
+
+      });
+      //유저 점수를 매기고 & 저장해주면됨.
+
+
+    });
+  }else if(data.text == STR_RNK){
+    getRank('pks',currentChannel,function(data){
+
+    // client.get(currentChannel+'_resultText_'+data.user,function(err,value){
+      bot.postMessage(currentChannel, data, params);
+    // })
+
+      // console.log(data);
+    // console.log(data[0]);
+    // console.log(data[1]);
+    });
   }
 
+
+  // if(typingType == 'message'){
+  //   console.log(data.text);
+  //   if(data.text)
+  // }
 
 
 //큐서버 콜 example
@@ -332,6 +468,24 @@ bot.on('message', function(data) {
   //           }
   //     }          
 });
+
+function similarStr(a,b) {
+    var lengthA = a.length;
+    var lengthB = b.length;
+    var equivalency = 0;
+    var minLength = (a.length > b.length) ? b.length : a.length;    
+    var maxLength = (a.length < b.length) ? b.length : a.length;    
+    for(var i = 0; i < minLength; i++) {
+        if(a[i] == b[i]) {
+            equivalency++;
+        }
+    }
+
+
+    var weight = equivalency / maxLength;
+    return (weight * 100) + "%";
+}
+
 
 function getDeliveryData(t_callNum,t_code,t_invoice,callback){
       
@@ -495,8 +649,11 @@ function insertTeam(teamName,callback){
       reply.every(function(entry,index) {
         
         if(entry==teamName){ 
-        flgIsSame = true; 
-        return false;}      
+          flgIsSame = true; 
+          return false;
+        }else{
+          return true;
+        }     
       });
 
       console.log(flgIsSame);
@@ -533,7 +690,9 @@ function initChannels(teamName,callback){
       var arrChannelsWithID = [];
       //엔트리에 아이디를 추가해준다.
             // reply.every(function(entry,index) {
-      rowChannels.every(function(entry,index){
+
+
+      rowChannels.forEach(function(entry){
         // console.log(entry);
         client.lpush(teamName,entry.id,function(err,reply){
           callback(1);
@@ -546,18 +705,43 @@ function initChannels(teamName,callback){
     }else{callback(0);}
   });
 }
+function getRank(teamName,channelID,callback){
+  client.lrange(teamName, 0, -1, function(err, reply) {    
+
+      reply.every(function(entry,index) {
+      //리스트에 채널ID랑 같은것이 있다! 면 스코어랑 유저를 저장한다.
+        if(entry==channelID){
+                 
+            client.zrevrange(channelID,0,-1,'withscores',function(err,members){
+                callback(members);  
+            });            
+          return false;
+        }else{
+          return true;
+        }
+      });
+
+  });
+}
 
 function setUserScore(teamName,channelID,user,score,callback){
+
   client.lrange(teamName, 0, -1, function(err, reply) {    
+    console.log(reply);
     reply.every(function(entry,index) {
       //리스트에 채널ID랑 같은것이 있다! 면 스코어랑 유저를 저장한다.
         if(entry==channelID){
-          client.zadd(channelID,score,user,function(err,reply){
+          client.zincrby(channelID,score,user,function(err,reply){
             if(err){
               callback(-1)
+
             }
             else{
-              callback(1);    
+              
+              client.zrevrange(channelID,0,-1,'withscores',function(err,members){
+                  // console.log('members!'+members);
+                  callback(members);  
+              });
             }
           });
           return false;
@@ -565,21 +749,28 @@ function setUserScore(teamName,channelID,user,score,callback){
         //채널 ID에 없다! 면 만들어서 넣어준다음 스코어랑 유저를 저장한다.
         else { 
           client.lpush(teamName,channelID,function(err,reply){
-            client.zadd(channelID,score,user,function(err,reply){
+            //zadd,zincryby
+            client.zincrby(channelID,score,user,function(err,reply){
               if(err){
                 callback(-1)
               }
               else{
                 callback(1);    
+                client.zrevrange(channelID,0,-1,'withscores',function(err,members){
+                    callback(members);  
+                });
+
               }
             });
             return false;
           });
         }
+        return true;
 
       });        
   });
 }
+
 
 // };
 
