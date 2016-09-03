@@ -1,0 +1,7 @@
+{
+    "host" : "localhost",
+    "port" : 5672,
+    "loginID":"admin",
+    "password":"password",
+    "vhost":"yenos-bot"
+}

@@ -189,6 +189,18 @@ bot.on('message', function(data) {
   const STR_QUIZ8 = '류오 와가 테키오 쿠라에!'
   const STR_QUIZ9 = '오우~ 제대로 놀아보자!'
   const STR_QUIZ10 = '영웅은 죽지않아요'
+
+  const STR_QUIZ11 = '상처를 치료해줄 사람 어디 없나'
+  const STR_QUIZ12 = '방황하는 내 영혼을 조작키를 잡은 Jack Sparrow'
+  const STR_QUIZ13 = '다들 그래(다들 그래) 맞어 그래 난 더 미치고 싶어'
+  const STR_QUIZ14 = '[빈듯했던 네겐 울트라 같은 펀치'
+  const STR_QUIZ15 = '메밀 꽃 필 무렵 그녀가 말했다.. 배가고파.. 피자가 먹고싶어'
+  const STR_QUIZ16 = '삶이 있는 한 희망은 있다 - 키케로'
+  const STR_QUIZ17 = '신은 용기있는자를 결코 버리지 않는다 - 켄러'
+  const STR_QUIZ18 = '행복한 삶을 살기위해 필요한 것은 거의 없다. - 마르쿠스 아우렐리우스 안토니우스'
+  const STR_QUIZ19 = '절대 어제를 후회하지 마라 . 인생은 오늘의 나 안에 있고 내일은 스스로 만드는 것이다 - L.론허바드'
+  const STR_QUIZ20 = '진짜 문제는 사람들의 마음이다. 그것은 절대로 물리학이나 윤리학의 문제가 아니다. - 아인슈타인'
+
   
   // console.log(bot.getChannels());
 
@@ -215,7 +227,7 @@ bot.on('message', function(data) {
   var timeLine;
 
   if(isGameStart==false){
-    var arrQuiz = [STR_QUIZ1,STR_QUIZ2,STR_QUIZ3,STR_QUIZ4,STR_QUIZ5,STR_QUIZ6,STR_QUIZ7,STR_QUIZ8,STR_QUIZ9,STR_QUIZ10]
+    var arrQuiz = [STR_QUIZ1,STR_QUIZ2,STR_QUIZ3,STR_QUIZ4,STR_QUIZ5,STR_QUIZ6,STR_QUIZ7,STR_QUIZ8,STR_QUIZ9,STR_QUIZ10,STR_QUIZ11,STR_QUIZ12,STR_QUIZ13,STR_QUIZ14,STR_QUIZ15,STR_QUIZ16,STR_QUIZ17,STR_QUIZ18,STR_QUIZ19,STR_QUIZ20]
     var selectedQuiz = arrQuiz[Math.floor(Math.random() * arrQuiz.length)];
     
     timeLine = selectedQuiz.length;
@@ -229,7 +241,7 @@ bot.on('message', function(data) {
     timeoutLine = arrQuiz.length;
     // console.log(timeoutLine);
     
-    bot.postMessage(currentChannel, '게임을 시작합니다.'+' timeout : '+timeLine/2+'초 ', params);
+    bot.postMessage(currentChannel, '게임을 시작합니다.'+' timeout : '+timeLine/3+'초 ', params);
     isGameStart = true;
   
     var cnt = 3;
@@ -258,9 +270,22 @@ bot.on('message', function(data) {
               client.get(currentChannel+'_resultText_'+data.user,function(err,value){
                 bot.postMessage(currentChannel, value , params);
               })
+              // console.log(currentChannel+'_resultEnqueueJson_'+data.user);
+              client.get(currentChannel+'_resultEnqueueJson_'+data.user,function(err,value){
+                // console.log(value);
+                //   var payload = JSON.stringify(value)
+                //   console.log(payload);
+                labzyWrite(value);
+                // labzyWrite(value);
+                // labzyWrite(value);
+                // labzyWrite(value);
+                // labzyWrite(value);
+                // labzyWrite(value);
+                // labzyWrite(value);
+              })
 
 
-            },timeLine/2*1000);
+            },timeLine/3*1000);
 
           },1000);   
 
@@ -273,7 +298,7 @@ bot.on('message', function(data) {
 
   }else if( isGameStart == true && typeUser != 'hanjin' && typingType =='message'){
     console.log('game enter end!');
-    console.log(data);
+    // console.log(data);
 
 
     client.get(currentChannel + "_start", function(err, value) {
@@ -286,7 +311,7 @@ bot.on('message', function(data) {
         var selectedQuiz = value;
         var accuracy = similarStr(data.text,selectedQuiz);
         var score = 0;
-
+        // console.log(accuracy);
         if(accuracy==100){
           score += 700;
         }else if(accuracy>=90 && accuracy<100){
@@ -297,22 +322,22 @@ bot.on('message', function(data) {
           score += 100;
         } 
         //0.5초 아래면
-        if(diffTime<500){
+        if(diffTime<2000){
           score += 100
-        }else if(diffTime>=500 && diffTime<1000){
+        }else if(diffTime>=2000 && diffTime<3000){
           score += 70
-        }else if(diffTime>=1000 && diffTime<1500){
+        }else if(diffTime>=3000 && diffTime<3500){
           score += 50
-        }else if(diffTime>=1500 && diffTime<2000){
+        }else if(diffTime>=3500 && diffTime<4000){
           score += 30
-        }else if (diffTime>=2000 && diffTime<3000){
+        }else if (diffTime>=4000 && diffTime<4500){
           score += 20
         }
         else{
           score += 10
         }
         // console.log(diffTime);
-        console.log(score);
+        // console.log(score);
 
         var arr = bot.getUsers()._value.members;
         var userName;
@@ -320,14 +345,29 @@ bot.on('message', function(data) {
         arr.every(function(entry,inex){
           // console.log(entry.id);
           // console.log(entry);
-          if(entry.id ==data.user){
+          if(entry.id == data.user){
             userName = entry.name;
-            
-            var resultText = userName+' =>'+' 정확도 : '+similarStr(data.text,selectedQuiz)+'  ||   차이 : '+msToTime(diffTime)+'  ||   score : '+score ;
-            client.set(currentChannel+'_resultText_'+data.user, resultText);
+
+            var percise = similarStr(data.text,selectedQuiz);
+            var userId = data.user
+            var resultText = userName+' =>'+' 정확도 : '+percise+'%  ||   걸린시간 : '+msToTime(diffTime)+'  ||   score : '+score ;
+            client.set(currentChannel+'_resultText_'+userId, resultText);
 
             setUserScore('pks',currentChannel,userName,score,function(data){
-              console.log(data);
+
+              var jsonData = new Object();
+              jsonData.userId = entry.id;
+              jsonData.userName = userName;
+              jsonData.percise = percise;
+              jsonData.diffTime = diffTime;
+              jsonData.score = score;
+              console.log(jsonData);
+
+              // console.log(currentChannel+'_resultEnqueueJson_'+userId);
+
+              client.set(currentChannel+'_resultEnqueueJson_'+userId, JSON.stringify(jsonData));
+
+              // console.log(data);
               // console.log(data[0]);
               // console.log(data[1]);
             });
@@ -483,7 +523,7 @@ function similarStr(a,b) {
 
 
     var weight = equivalency / maxLength;
-    return (weight * 100) + "%";
+    return (weight * 100);
 }
 
 
@@ -613,8 +653,17 @@ function prettyJson(jsonVal,t_callNum,t_invoice){
 
 module.exports = app;
 http.createServer(app).listen(app.get('port'), function() {
+console.log('gogo! serverrunning');
+
+
+
 
 });
+
+
+//rabitq
+
+
 
 //**REDIS 저장 로직
 //1. 최초 앱봇이 추가될떄 해당팀을 넣는다. teams : ['urung','namtang']
@@ -727,7 +776,7 @@ function getRank(teamName,channelID,callback){
 function setUserScore(teamName,channelID,user,score,callback){
 
   client.lrange(teamName, 0, -1, function(err, reply) {    
-    console.log(reply);
+    // console.log(reply);
     reply.every(function(entry,index) {
       //리스트에 채널ID랑 같은것이 있다! 면 스코어랑 유저를 저장한다.
         if(entry==channelID){
@@ -739,8 +788,9 @@ function setUserScore(teamName,channelID,user,score,callback){
             else{
               
               client.zrevrange(channelID,0,-1,'withscores',function(err,members){
-                  // console.log('members!'+members);
+                  // console.log('members!'+members);                  
                   callback(members);  
+
               });
             }
           });
@@ -769,6 +819,53 @@ function setUserScore(teamName,channelID,user,score,callback){
 
       });        
   });
+}
+
+//producer
+//큐서버로 데이터를(저장정보) 전송한다.
+function labzyWrite(payload){
+  var config = require('./conf.json');
+  var amqp = require('amqp');
+  var connection = amqp.createConnection({ host: config.host, port: config.port,login:config.loginID,password:config.password,vhost:config.vhost });
+  connection.on('ready', function () {
+    console.log('read');
+
+    connection.exchange('yenos-bot', options={type:'direct'}, function(exchange) {   
+    console.log('exchange');
+
+      var sendMessage = function(exchange, payload) {
+        console.log('producer')
+        var encoded_payload = JSON.stringify(payload);
+        exchange.publish('yenos-bot-key', encoded_payload, {})
+      }
+      sendMessage(exchange,payload);
+
+      // var queue = connection.queue('yenos-bot-queue');
+      // queue.bind(exchange, "direct-key");
+      // queue.subscribe(function (message) {
+      // });
+
+      // Recieve messages
+      // connection.queue('yenos-bot', function(queue){
+      //   // console.log('Created queue')
+      //   queue.bind(exchange, 'yenos-bot-key'); 
+      //   queue.subscribe(function (message) {
+      //     console.log('subscribed to queue')
+      //     var encoded_payload = unescape(message.data)
+      //     var payload = JSON.parse(encoded_payload)
+      //     console.log('Recieved a message:')
+      //     console.log(payload)
+      //   })
+      // })
+
+      // setInterval( function() {    
+      //   var test_message = 'TEST '
+      //   sendMessage(exchange, test_message)  
+      // }, 2000) 
+
+   })
+
+  })
 }
 
 
