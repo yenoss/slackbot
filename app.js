@@ -11,9 +11,11 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var users = require('./routes/users');
+
+var utilz = require('./common/utilz');
+
 var app = express();
-
-
 //slackBot
 var SlackBot = require('slackbots');
 //redis
@@ -76,21 +78,9 @@ app.use(function(err, req, res, next) {
 });
 
 
+// function consolee
 
 
-
-function msToTime(duration) {
-    var milliseconds = parseInt((duration%1000)/100)
-        , seconds = parseInt((duration/1000)%60)
-        , minutes = parseInt((duration/(1000*60))%60)
-        , hours = parseInt((duration/(1000*60*60))%24);
-
-    hours = (hours < 10) ? "0" + hours : hours;
-    minutes = (minutes < 10) ? "0" + minutes : minutes;
-    seconds = (seconds < 10) ? "0" + seconds : seconds;
-
-    return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
-}
 
 
 var bot = new SlackBot({
@@ -99,52 +89,12 @@ var bot = new SlackBot({
 });
 
 
-function initGameInfo (typess){
-  typess = 'hi';
-  // console.log(typess);
+// function initGameInfo (typess){
+//   typess = 'hi';
+//   // console.log(typess);
 
-}
+// }
 bot.on('start', function() {
-
-  //봇 예제..
-    // more information about additional params https://api.slack.com/methods/chat.postMessage 
-    // var params = {
-    //     icon_emoji: ':cat:'
-    // };
-    
-    // define channel, where bot exist. You can adjust it there https://my.slack.com/services  
-    
-    // // define existing username instead of 'user_name' 
-    // bot.postMessageToUser('yenos', 'meow!', params); 
-    
-    // // If you add a 'slackbot' property,  
-    // // you will post to another user's slackbot channel instead of a direct message 
-    // bot.postMessageToUser('yenos', 'meow!', { 'slackbot': true, icon_emoji: ':cat:' }); 
-    
-    // define private group instead of 'private_group', where bot exist 
-    // bot.postMessageToGroup('private_group', 'meow!', params); 
-    // var jsonVa = '{"result":"Y","completeYN":"Y","itemName":"","trackingDetails":[{"time":1472198811000,"level":2,"remark":null,"telno2":"010-5232-9575","telno":"02-2614-8254","manPic":"","timeString":"2016-08-26 17:06:51","code":null,"where":"구로중앙(대)","manName":"","kind":"집하완료"},{"time":1472205826000,"level":3,"remark":null,"telno2":"","telno":"02-852-8548","manPic":"","timeString":"2016-08-26 19:03:46","code":null,"where":"구로터미널","manName":"","kind":"구간도착"},{"time":1472209769000,"level":3,"remark":null,"telno2":"","telno":"02-852-8548","manPic":"","timeString":"2016-08-26 20:09:29","code":null,"where":"구로터미널","manName":"","kind":"구간발송"},{"time":1472218103000,"level":3,"remark":null,"telno2":"","telno":"031-460-2800","manPic":"","timeString":"2016-08-26 22:28:23","code":null,"where":"군포TML","manName":"","kind":"구간도착"},{"time":1472255413000,"level":3,"remark":null,"telno2":"","telno":"02-3159-7982","manPic":"","timeString":"2016-08-27 08:50:13","code":null,"where":"상암(대)","manName":"","kind":"구간도착"},{"time":1472267709000,"level":5,"remark":null,"telno2":"010-2730-9428","telno":"02-3159-7982","manPic":"","timeString":"2016-08-27 12:15:09","code":null,"where":"상암(대)","manName":"","kind":"배달전"},{"time":1472295682000,"level":6,"remark":null,"telno2":"010-2730-9428","telno":"02-3159-7982","manPic":"","timeString":"2016-08-27 20:01:22","code":null,"where":"상암(대)","manName":"","kind":"배달완료"},{"time":1472309999000,"level":6,"remark":null,"telno2":"010-2730-9428","telno":"02-3159-7982","manPic":"","timeString":"2016-08-27 23:59:59","code":null,"where":"상암(대)","manName":"","kind":"인수등록"}],"productInfo":null,"lastDetail":{"time":1472309999000,"level":6,"remark":null,"telno2":"010-2730-9428","telno":"02-3159-7982","manPic":"","timeString":"2016-08-27 23:59:59","code":null,"where":"상암(대)","manName":"","kind":"인수등록"},"invoiceNo":"225664590060","estimate":null,"adUrl":null,"recipient":null,"lastStateDetail":{"time":1472309999000,"level":6,"remark":null,"telno2":"010-2730-9428","telno":"02-3159-7982","manPic":"","timeString":"2016-08-27 23:59:59","code":null,"where":"상암(대)","manName":"","kind":"인수등록"},"senderName":"","level":6,"receiverAddr":"","complete":true,"zipCode":null,"orderNumber":null,"firstDetail":{"time":1472198811000,"level":2,"remark":null,"telno2":"010-5232-9575","telno":"02-2614-8254","manPic":"","timeString":"2016-08-26 17:06:51","code":null,"where":"구로중앙(대)","manName":"","kind":"집하완료"},"receiverName":"","itemImage":null}';
-    // console.log('hi');
-    
-
-    // bot.postMessageToUser('yenos', 'hi', { 'slackbot': true, icon_emoji: ':cat:' }); 
-    // var channels = []
-    // channels = bot.getChannels()._value;
-    // var obj = JSON.parse(bot.getChannels()._value);
-    // console.log(obj);
-    // var arrDetail = obj._value;
-
-    // // console.log(channels[0]);
-      // console.log(bot.getChannels()._value);
-      // var test;
-    // initGameInfo(test);
-    // console.log(test);
-
-    // initChannels('hi',function(reply){
-    //   console.log('reply ==> '+reply);
-    // });
-
-
   
   //reply에 따라
   //0 -> exist
@@ -154,378 +104,232 @@ bot.on('start', function() {
   //   console.log('callbakc reply =>'+reply);
   // });
 
-
-  // insertTeam('pks',function(data){
-  //   console.log("callback => "+ data);
-  // });
-
-  // initChannels('pks',function(data){
-  //   console.log("callback => "+ data);
-  // });
-
-  // C27J7NZ5L
-  // setUserScore
-  // setUserScore('pks','C27J7NZ5L','user',3,function(data){
-  //   console.log(data);
-  // });
-    // console.log(bot.getUsers()._value.members);
-
+  //레디스 team(키)에 팀이름을 등록시킨다(pks)
+  //팀이름 혹 자체적으로 해시키로 만들어서 저장해준다.
+  insertTeam('pks',function(data){
+    if(data==1 || data==0){
+      //팀내의 있는 채널들을 싹다 가져온다.
+      initChannels('pks',function(data){
+        console.log("callback => "+ data);
+      });    
+    }
+    console.log("callback => "+ data);
+  });
 
 
 });
+
+const STR_START  = '.시작'
+const STR_RNK  = '.랭크'
+const STR_QUIZ1 = '류신노 겐오 쿠라에!'
+const STR_QUIZ2 = '이것도 너프해 보시지!'
+const STR_QUIZ3 = '석양이 진다..'
+const STR_QUIZ4 = '목표를 포착했다.'
+const STR_QUIZ5 = '폭탄 고정 / 폭탄받아'
+const STR_QUIZ6 = '하늘에서 정의가 빗발친다!'
+const STR_QUIZ7 = '신사숙녀여러분,한번 달려보자고!'
+const STR_QUIZ8 = '류오 와가 테키오 쿠라에!'
+const STR_QUIZ9 = '오우~ 제대로 놀아보자!'
+const STR_QUIZ10 = '영웅은 죽지않아요'
+
+const STR_QUIZ11 = '상처를 치료해줄 사람 어디 없나'
+const STR_QUIZ12 = '방황하는 내 영혼을 조작키를 잡은 Jack Sparrow'
+const STR_QUIZ13 = '다들 그래(다들 그래) 맞어 그래 난 더 미치고 싶어'
+const STR_QUIZ14 = '[빈듯했던 네겐 울트라 같은 펀치'
+const STR_QUIZ15 = '메밀 꽃 필 무렵 그녀가 말했다.. 배가고파.. 피자가 먹고싶어'
+const STR_QUIZ16 = '삶이 있는 한 희망은 있다 - 키케로'
+const STR_QUIZ17 = '신은 용기있는자를 결코 버리지 않는다 - 켄러'
+const STR_QUIZ18 = '행복한 삶을 살기위해 필요한 것은 거의 없다. - 마르쿠스 아우렐리우스 안토니우스'
+const STR_QUIZ19 = '절대 어제를 후회하지 마라 . 인생은 오늘의 나 안에 있고 내일은 스스로 만드는 것이다 - L.론허바드'
+const STR_QUIZ20 = '진짜 문제는 사람들의 마음이다. 그것은 절대로 물리학이나 윤리학의 문제가 아니다. - 아인슈타인'
+
+const IM_USER = 'USER'
+const IM_BOT = 'BOT'
+const BOT_FULLNAME = 'hanjin'
+
+const TALK_TYPE_RECONNECT_URL = 'reconnect_url'
+const TALK_TYPE_USER_TYPING = 'user_typing'
+const TALK_TYPE_MESSAGE = 'message'
+
+var arrQuiz;
+var params;
 var isGameStart = false;
+
+function initGame(data){
+  //기존 데이터 있으면 일단삭제 싹하고
+  client.del(data.channel+'_resultList_');
+
+  arrQuiz = [STR_QUIZ1,STR_QUIZ2,STR_QUIZ3,STR_QUIZ4,STR_QUIZ5,STR_QUIZ6,STR_QUIZ7,STR_QUIZ8,STR_QUIZ9,STR_QUIZ10,STR_QUIZ11,STR_QUIZ12,STR_QUIZ13,STR_QUIZ14,STR_QUIZ15,STR_QUIZ16,STR_QUIZ17,STR_QUIZ18,STR_QUIZ19,STR_QUIZ20]
+  
+  params = {
+          icon_emoji: ''
+    };
+
+}
 
 bot.on('message', function(data) {
 
-  const STR_START  = '.시작'
-  const STR_RNK  = '.랭크'
-  const STR_QUIZ1 = '류신노 겐오 쿠라에!'
-  const STR_QUIZ2 = '이것도 너프해 보시지!'
-  const STR_QUIZ3 = '석양이 진다..'
-  const STR_QUIZ4 = '목표를 포착했다.'
-  const STR_QUIZ5 = '폭탄 고정 / 폭탄받아'
-  const STR_QUIZ6 = '하늘에서 정의가 빗발친다!'
-  const STR_QUIZ7 = '신사숙녀여러분,한번 달려보자고!'
-  const STR_QUIZ8 = '류오 와가 테키오 쿠라에!'
-  const STR_QUIZ9 = '오우~ 제대로 놀아보자!'
-  const STR_QUIZ10 = '영웅은 죽지않아요'
+  //가. 게임 초기화할것들이 필요함. 이초기화할것들은 게임이 시작되면 전체적으로 초기화되는것임.
+  // 0. 퀴즈배열 초기화.
+  // 1. 게임 기본 파라미터 설정.
 
-  const STR_QUIZ11 = '상처를 치료해줄 사람 어디 없나'
-  const STR_QUIZ12 = '방황하는 내 영혼을 조작키를 잡은 Jack Sparrow'
-  const STR_QUIZ13 = '다들 그래(다들 그래) 맞어 그래 난 더 미치고 싶어'
-  const STR_QUIZ14 = '[빈듯했던 네겐 울트라 같은 펀치'
-  const STR_QUIZ15 = '메밀 꽃 필 무렵 그녀가 말했다.. 배가고파.. 피자가 먹고싶어'
-  const STR_QUIZ16 = '삶이 있는 한 희망은 있다 - 키케로'
-  const STR_QUIZ17 = '신은 용기있는자를 결코 버리지 않는다 - 켄러'
-  const STR_QUIZ18 = '행복한 삶을 살기위해 필요한 것은 거의 없다. - 마르쿠스 아우렐리우스 안토니우스'
-  const STR_QUIZ19 = '절대 어제를 후회하지 마라 . 인생은 오늘의 나 안에 있고 내일은 스스로 만드는 것이다 - L.론허바드'
-  const STR_QUIZ20 = '진짜 문제는 사람들의 마음이다. 그것은 절대로 물리학이나 윤리학의 문제가 아니다. - 아인슈타인'
 
-  
-  // console.log(bot.getChannels());
 
-  // arrQuiz.forEach(function(ele){
-  //   console.log(ele);
-  // })
+  //타입유저를 분별한다. 
+  // console.log(data);
 
   var typeUser;
+
+  var whoUare;
+  //사람이 입력하면 ==> user가 있고
+  //봇이 입력하면 ==> userName이 있다.
+  //고로 이것으로 유저인지 아닌지를 분별한다.
+
+  //ex) username :한진, user는 id로 보여진다.
+  //** 유저구분은 불안정한 소켓에서 명확하게 확인해줄 중요한요소이다.
   if(data.username == undefined){
+    whoUare = IM_USER;
     typeUser = data.user;
   }else{
+    whoUare = IM_BOT;
     typeUser = data.username;
   }
-  var typingType;
-  typingType = data.type;
-
-  var user = data.user;
-  var currentChannel = data.channel;
-
-  var params = {
-      icon_emoji: ''
-  };
   
-  var timeLine;
+  var typingType = data.type;
 
-  if(isGameStart==false){
-    var arrQuiz = [STR_QUIZ1,STR_QUIZ2,STR_QUIZ3,STR_QUIZ4,STR_QUIZ5,STR_QUIZ6,STR_QUIZ7,STR_QUIZ8,STR_QUIZ9,STR_QUIZ10,STR_QUIZ11,STR_QUIZ12,STR_QUIZ13,STR_QUIZ14,STR_QUIZ15,STR_QUIZ16,STR_QUIZ17,STR_QUIZ18,STR_QUIZ19,STR_QUIZ20]
-    var selectedQuiz = arrQuiz[Math.floor(Math.random() * arrQuiz.length)];
-    
-    timeLine = selectedQuiz.length;
-    // console.log(timeLine);
-    client.set(currentChannel + "_Quiz", selectedQuiz);
 
-  }
+  //나. 게임시작.
+  //  .시작을 입력하였을떄.
+  //  퀴즈리스트에서 퀴즈를 하나 골라두고
+  //  3. 2. 1. 제시어가 보여질수 있도록한다.
+
 
   if(data.text == STR_START){
-    
-    timeoutLine = arrQuiz.length;
-    // console.log(timeoutLine);
-    
-    bot.postMessage(currentChannel, '게임을 시작합니다.'+' timeout : '+timeLine/3+'초 ', params);
-    isGameStart = true;
-  
-    var cnt = 3;
-    var countDown = setInterval(function(){
-      // if(cnt==3)
-      if(cnt==0){
-        // console.log('0');
-      }
-      if(cnt==1){
-        // console.log('1');
-        //바로 여기서 끊김.
-        clearInterval(countDown)
 
+    isGameStart = true;
+    var currentChannel = data.channel;
+    initGame(data);
+    //time line은 시간을 재고 보여주기위함이다.
+    
+    //퀴즈리스트에서 퀴즈를 고르고 
+    var selectedQuiz = arrQuiz[Math.floor(Math.random() * arrQuiz.length)];
+    
+    //선택된 퀴즈의 길이를 반환한다.
+    var timeOut = selectedQuiz.length;
+    
+
+    //redis에 현재 퀴즈 를 저장한다. 후에 비교하기위함이다.    
+    client.set(currentChannel + "_Quiz", selectedQuiz);
+
+    //봇에게 게임을 시작한다고 알려준다.
+    bot.postMessage(currentChannel, '게임을 시작합니다.'+' timeout : '+timeOut/3+'초 ', params);
+    //
+    var cnt = 3;
+    var countDown = setInterval(function(){    
+      if(cnt==1){        
+        //clear로 인터벌을 끊어줌.
+        clearInterval(countDown)
+          //그리고 종료를위해 타이머를 다시 설정
           setTimeout(function(){
+
             var startTime = new Date().getTime();
             client.set(currentChannel + "_start", startTime);
-            bot.postMessage(currentChannel,'*'+selectedQuiz+'* '+msToTime(startTime), params);          
-            // bot.postMessage(currentChannel, STR_GAME_TIMEOUT+msToTime(startTime), params);
 
+            //문제내기!
+            bot.postMessage(currentChannel,'*'+selectedQuiz+'* '+ utilz.msToTime(startTime), params);          
+            
+            //문제내기 시작부터 타임아웃시작!
             setTimeout(function(){
-              // var startTime = ;
-              isGameStart = false
-              // console.log(timeLine*1000);
-              bot.postMessage(currentChannel, '-----TimeOut------'+msToTime(new Date().getTime()) , params);
-              // client.set(currentChannel+'_resultText_'+data.user, resultText);
-              client.get(currentChannel+'_resultText_'+data.user,function(err,value){
-                bot.postMessage(currentChannel, value , params);
-              })
-              // console.log(currentChannel+'_resultEnqueueJson_'+data.user);
-              client.get(currentChannel+'_resultEnqueueJson_'+data.user,function(err,value){
-                // console.log(value);
-                //   var payload = JSON.stringify(value)
-                //   console.log(payload);
-                labzyWrite(value);
-                // labzyWrite(value);
-                // labzyWrite(value);
-                // labzyWrite(value);
-                // labzyWrite(value);
-                // labzyWrite(value);
-                // labzyWrite(value);
-              })
 
+              // isGameStart = false
+              //타임아웃이라고 말해준다.
+              bot.postMessage(currentChannel, '-----TimeOut------'+ utilz.msToTime(new Date().getTime()), params);
+              
+              client.lrange(data.channel+'_resultList_', 0, -1, function(err, reply) {    
+                for(var entry in reply){
+                  bot.postMessage(currentChannel,reply[entry] , params);  
+                }
 
-            },timeLine/3*1000);
+                client.lrange(currentChannel+'_resultEnqueueJson', 0, -1, function(err, reply) {                                  
+                  for(var entry in reply){
+                    labzyWrite(reply[entry]);  
+                  }
+                  client.del(data.channel+'_resultEnqueueJson');
+                  isGameStart = false;
+
+                });             
+              }); 
+            },timeOut/3*1000);
 
           },1000);   
 
-      };        
-        bot.postMessage(currentChannel,cnt--, params);
+      }; 
+
+      bot.postMessage(currentChannel,cnt--, params);
     },500);
- 
-  }else if(data.text == '.끝'){
-    
 
-  }else if( isGameStart == true && typeUser != 'hanjin' && typingType =='message'){
-    console.log('game enter end!');
-    // console.log(data);
+    //
+  }
 
+  //게임이 시작했다.
+  else if( isGameStart == true && typeUser != BOT_FULLNAME && typingType ==TALK_TYPE_MESSAGE && whoUare == IM_USER){
+    console.log('hi! am Answer!');
 
+    var currentChannel = data.channel;
+
+    //현재타임에서 차이를 이용해 얼마나걸렸는지 확인한다.
     client.get(currentChannel + "_start", function(err, value) {
       var startTime = value;
       var endTime = new Date().getTime();
       var diffTime = endTime - startTime;
-
-      
+    
       client.get(currentChannel + "_Quiz", function(err, value) {
-        var selectedQuiz = value;
-        var accuracy = similarStr(data.text,selectedQuiz);
-        var score = 0;
-        // console.log(accuracy);
-        if(accuracy==100){
-          score += 700;
-        }else if(accuracy>=90 && accuracy<100){
-          score += 500;
-        }else if(accuracy>=80 && accuracy<90){
-          score += 300;
-        }else{
-          score += 100;
-        } 
-        //0.5초 아래면
-        if(diffTime<2000){
-          score += 100
-        }else if(diffTime>=2000 && diffTime<3000){
-          score += 70
-        }else if(diffTime>=3000 && diffTime<3500){
-          score += 50
-        }else if(diffTime>=3500 && diffTime<4000){
-          score += 30
-        }else if (diffTime>=4000 && diffTime<4500){
-          score += 20
-        }
-        else{
-          score += 10
-        }
-        // console.log(diffTime);
-        // console.log(score);
-
+          //유저네임을 추출하기위해 봇에 모든 유저들을 가져온다.
         var arr = bot.getUsers()._value.members;
         var userName;
-        // ㅁㄲ
-        arr.every(function(entry,inex){
-          // console.log(entry.id);
-          // console.log(entry);
-          if(entry.id == data.user){
-            userName = entry.name;
+        var userID;
+        
+        for (var entry in arr){
+          //아이디같은녀석중에 이름을 추출해야한다.
+          if(arr[entry].id == typeUser){
+            userName = arr[entry].name;
+            userID = arr[entry].id;
+            console.log(userName);
+            break;
+          };
+        }
 
-            var percise = similarStr(data.text,selectedQuiz);
-            var userId = data.user
-            var resultText = userName+' =>'+' 정확도 : '+percise+'%  ||   걸린시간 : '+msToTime(diffTime)+'  ||   score : '+score ;
-            client.set(currentChannel+'_resultText_'+userId, resultText);
+        //score로직이 들어가야함;;;
+        var accuracy = utilz.similarStr(data.text,value);
+        var score = 1000;
 
-            setUserScore('pks',currentChannel,userName,score,function(data){
+        var resultText = userName+' =>'+' 정확도 : '+accuracy+'%  ||   걸린시간 : '+utilz.msToTime(diffTime)+'  ||   score : '+score ;
+        //유저채널명을 앞으로 구분하여 저장한다.
+      
+
+        //보여줄거 싹다 저장하고.. 
+        client.lpush(currentChannel+'_resultList_',resultText,function(err,reply){
+        
+        setUserScore('pks',currentChannel,userName,score,function(data){
 
               var jsonData = new Object();
-              jsonData.userId = entry.id;
+              jsonData.userId = userID;
               jsonData.userName = userName;
-              jsonData.percise = percise;
+              jsonData.percise = accuracy;
               jsonData.diffTime = diffTime;
               jsonData.score = score;
-              console.log(jsonData);
 
-              // console.log(currentChannel+'_resultEnqueueJson_'+userId);
+              client.lpush(currentChannel+'_resultEnqueueJson',JSON.stringify(jsonData),function(err,reply){
 
-              client.set(currentChannel+'_resultEnqueueJson_'+userId, JSON.stringify(jsonData));
+              });
 
-              // console.log(data);
-              // console.log(data[0]);
-              // console.log(data[1]);
-            });
-
-            // bot.postMessage(currentChannel,resultText , params);  
-
-
-            return false;
-          }else{
-            return true;
-          }
-          
-          
+            });         
         });
-        // arr.forEach(function(ele){
-        //   console.log(ele.id);
-        // })
-
       });
-      //유저 점수를 매기고 & 저장해주면됨.
-
-
     });
-  }else if(data.text == STR_RNK){
-    getRank('pks',currentChannel,function(data){
 
-    // client.get(currentChannel+'_resultText_'+data.user,function(err,value){
-      bot.postMessage(currentChannel, data, params);
-    // })
-
-      // console.log(data);
-    // console.log(data[0]);
-    // console.log(data[1]);
-    });
   }
-
-
-  // if(typingType == 'message'){
-  //   console.log(data.text);
-  //   if(data.text)
-  // }
-
-
-//큐서버 콜 example
-//       var userId = currentChannel + "_" + user;
-//       client.get(userId, function(err, value) {
-//         // console.log('value  ==>'+currentChannel + "_" + user);
-//         // console.log('value  ==>'+value);
-//         //nil일떄
-//         if(value == null){
-//           console.log('its new!');            
-//           client.set(userId, diffTime);
-//         }else{
-//           if(value != diffTime){
-//             client.set(userId, diffTime);
-//             console.log('difference!');            
-//             //다름으로 큐 서버로 콜한다.
-// // 52.69.191.160:53366/queue?redisVal={"hi":"hi"}
-//             request.get(
-//                 'http://52.69.191.160:53366/queue?redisVal='+'{"user" : "'+userId+'","time" :"'+diffTime+'"}',
-//                 { redisVal: { redisVal: 'value' } },
-//                 function (error, response, body) {
-//                   // console.log(defaultURL+'&t_code='+t_code+'&t_invoice='+t_invoice);
-//                   console.log(body);
-//                     if (!error && response.statusCode == 200) {
-//                             // console.log(body);
-//                             // var start = body.indexOf("{");
-//                             // var end = body.lastIndexOf("}");
-//                             // callback(body.substr(start, end-30));
-//                       }
-//                   }
-//               );
-
-//             }else{
-//               client.set(currentChannel + "_" + user, diffTime);
-//               console.log('same!');            
-//             }
-//           }
-//       });
-//     });
-  // }
-
-
-
-
-
-
-  // bot.postMessage(currentChannel, '시작 =>', params);
-
-    // // all ingoing events https://api.slack.com/rtm 
-    // console.log(data);
-    // //     console.log(data.text);
-    
-
-    //택배 테스트
-  //   console.log(data.text);
-  //   // // PostCode('');
-  //     var regExp = /^_/g;
-  // //일단 명령어로 인지한다.
-  //     if(regExp.test(data.text)){
-  //           var arrInput = data.text.split("_");
-  //           if(arrInput.length==2){
-  //                   print("무언가 부족합니다.")
-  //           }else{
-  //                 console.log(arrInput[1]);
-  //                 console.log(arrInput[2]);
-  //                   var t_code;
-  //                   var t_invoice;
-  //                   var t_callNum;
-  //                   if(arrInput[1]=='CJ' || arrInput[1] == '04'){t_code = '04'; t_callNum = 8082}
-  //                   else if(arrInput[1]=='현대' || arrInput[1] == '08'){t_code = '08',t_callNum = 8731}
-  //                   else if(arrInput[1]=='우체' || arrInput[1] == '01'){t_code = '01',t_callNum = 6630}
-  //                   //현대_8731
-  //                   //CJ_8082
-  //                   t_invoice = arrInput[2];
-                    
-  //                   var json = '{"mykey": "my value"}';
-  //                   // console.log(t_code);
-  //                   // console.log(t_invoice);
-  //                   getDeliveryData(t_callNum,t_code,t_invoice,function(json){
-  //                       console.log(json);   
-  //                       var params = {
-  //                           icon_emoji: ''
-  //                       };
-                        
-  //                       // bot.postMessageToUser('yenos', prettyJson(json,t_callNum,t_invoice), params); 
-
-  //                       // console.log(currentChannel);
-  //                       bot.postMessage(currentChannel, prettyJson(json,t_callNum,t_invoice), params);
-  //                       // bot.postMessageToChannel(currentChannel, prettyJson(json,t_callNum,t_invoice), params);
-
-  //                       // var obj = eval(json)œ
-  //                       // JSON.stringify(json)
-
-
-  //                   });
-  //                 // console.log(backing);
-  //           }
-  //     }          
 });
-
-function similarStr(a,b) {
-    var lengthA = a.length;
-    var lengthB = b.length;
-    var equivalency = 0;
-    var minLength = (a.length > b.length) ? b.length : a.length;    
-    var maxLength = (a.length < b.length) ? b.length : a.length;    
-    for(var i = 0; i < minLength; i++) {
-        if(a[i] == b[i]) {
-            equivalency++;
-        }
-    }
-
-
-    var weight = equivalency / maxLength;
-    return (weight * 100);
-}
-
 
 function getDeliveryData(t_callNum,t_code,t_invoice,callback){
       
@@ -588,76 +392,10 @@ function prettyJson(jsonVal,t_callNum,t_invoice){
 
           return prettyVal
 }
-// function prettyJson(jsonVa){
-//   // var obj = JSON.parse(jsonVa);
-//   //   // console.log(obj.trackingDetails);
-//   //   var arrDetail = obj.trackingDetails;
-//   //   // console.log('hi ')
-//   //   var prettyVal = '========================================================\n';
-//   //   prettyVal += '                   시간                         배송상태                          장소\n';
-//   //   prettyVal += '========================================================\n';
-//   //   for(var i = 0 ; i< arrDetail.length; i++){
-//   //           prettyVal += '   '+arrDetail[i].timeString+'      ';
-//   //           prettyVal += '      '+arrDetail[i].kind;
-            
-//   //           for(var j = 0 ;j<10-arrDetail[i].kind.length;j++){
-//   //                   prettyVal +='   ';
-//   //           }          
-
-//   //           prettyVal += '  '+arrDetail[i].where+'   ';
-//   //           prettyVal += '\n';
-//   //   }
-//     // return prettyVal
-// }
-
-//  function PostCode(codestring) {
-//   // Build the post string from an object
-//   var post_data;
-//   // var post_data = querystring.stringify({
-//   //     // 'compilation_level' : 'ADVANCED_OPTIMIZATIONS',
-//   //     // 'output_format': 'json',
-//   //     // 'output_info': 'compiled_code',
-//   //     //   'warning_level' : 'QUIET',
-//   //     //   'js_code' : codestring
-//   // });
-
-//   // An object of options to indicate where to post to
-//   var post_options = {
-//       host: 'http://www.naver.com',
-//       port: '80',
-//       path: '/',
-//       method: 'GET',
-//       headers: {
-//           'Content-Type': 'application/x-www-form-urlencoded',
-//           'Content-Length': Buffer.byteLength(post_data)
-//       }
-//   };
-
-//   // Set up the request
-//   var post_req = http.request(post_options, function(res) {
-//       res.setEncoding('utf8');
-//       res.on('data', function (chunk) {
-//           console.log('Response: ' + chunk);
-//       });
-//   });
-
-//   // post the data
-//   post_req.write(post_data);
-//   post_req.end();
-
-// }
-
-
-
-
 
 module.exports = app;
 http.createServer(app).listen(app.get('port'), function() {
-console.log('gogo! serverrunning');
-
-
-
-
+  console.log('gogo! serverrunning');
 });
 
 
@@ -824,9 +562,13 @@ function setUserScore(teamName,channelID,user,score,callback){
 //producer
 //큐서버로 데이터를(저장정보) 전송한다.
 function labzyWrite(payload){
+  console.log('lazy write')
   var config = require('./conf.json');
   var amqp = require('amqp');
-  var connection = amqp.createConnection({ host: config.host, port: config.port,login:config.loginID,password:config.password,vhost:config.vhost });
+  // console.log('hi write')
+  
+  
+  var connection = amqp.createConnection({ host: config.host, port: 5672,login:config.loginID,password:config.password,vhost:config.vhost });
   connection.on('ready', function () {
     console.log('read');
 
@@ -840,43 +582,37 @@ function labzyWrite(payload){
       }
       sendMessage(exchange,payload);
 
-      // var queue = connection.queue('yenos-bot-queue');
-      // queue.bind(exchange, "direct-key");
-      // queue.subscribe(function (message) {
-      // });
+   });
 
-      // Recieve messages
-      // connection.queue('yenos-bot', function(queue){
-      //   // console.log('Created queue')
-      //   queue.bind(exchange, 'yenos-bot-key'); 
-      //   queue.subscribe(function (message) {
-      //     console.log('subscribed to queue')
-      //     var encoded_payload = unescape(message.data)
-      //     var payload = JSON.parse(encoded_payload)
-      //     console.log('Recieved a message:')
-      //     console.log(payload)
-      //   })
-      // })
-
-      // setInterval( function() {    
-      //   var test_message = 'TEST '
-      //   sendMessage(exchange, test_message)  
-      // }, 2000) 
-
-   })
-
-  })
+  });
 }
 
 
-// };
+// function msToTime(duration) {
+//     var milliseconds = parseInt((duration%1000)/100)
+//         , seconds = parseInt((duration/1000)%60)
+//         , minutes = parseInt((duration/(1000*60))%60)
+//         , hours = parseInt((duration/(1000*60*60))%24);
 
-//랭크 저장 테스트
-// client.zadd('myset',1,'usera');
-// client.zadd('myset',5,'userb');
-// client.zadd('myset',3,'userc');
-// client.zrevrange('myset',0,-1,'withscores',function(err,members){
-//   // console.log(members[0]);
-//   // console.log(members[1]);
-// });
+//     hours = (hours < 10) ? "0" + hours : hours;
+//     minutes = (minutes < 10) ? "0" + minutes : minutes;
+//     seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+//     return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+// }
+// function similarStr(a,b) {
+//     var lengthA = a.length;
+//     var lengthB = b.length;
+//     var equivalency = 0;
+//     var minLength = (a.length > b.length) ? b.length : a.length;    
+//     var maxLength = (a.length < b.length) ? b.length : a.length;    
+//     for(var i = 0; i < minLength; i++) {
+//         if(a[i] == b[i]) {
+//             equivalency++;
+//         }
+//     }
+//     //절대 maxLength가0 이면안된다.
+//     var weight = equivalency / maxLength;
+//     return (weight * 100);
+// }
 

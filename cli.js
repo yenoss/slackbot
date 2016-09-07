@@ -32,7 +32,7 @@ var server = http.createServer(app).listen(53368, function() {
     console.log('cli run!!');
     var config = require('./conf.json');
     var amqp = require('amqp');
-    var connection = amqp.createConnection({ host: config.host, port: config.port,login:config.loginID,password:config.password,vhost:config.vhost });
+    var connection = amqp.createConnection({ host: config.host, port: 5672,login:config.loginID,password:config.password,vhost:config.vhost });
     var count = 1;
 
   connection.on('ready', function () {
